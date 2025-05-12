@@ -1,4 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
+import TopMenu from './components/ui/top-menu';
+import AboutPage from './components/ui/AboutPage';
+import StatsPanel from './components/ui/StatsPanel';
 
 function App() {
   const canvasRef = useRef(null);
@@ -7,63 +10,6 @@ function App() {
   const [currentSpeed, setCurrentSpeed] = useState(0);
   const [selectedObject, setSelectedObject] = useState('');
   const [availableInteractions, setAvailableInteractions] = useState([]);
-
-  const AboutPage = () => (
-    <section id="about-section" className="max-w-3xl mx-auto mt-24 p-6 bg-white rounded shadow">
-      <h2 className="text-3xl font-bold mb-4">About This Project</h2>
-      <p className="mb-6">
-        This is a Unity WebGL Demo Project showcasing basic integration, player movement, and object interactions. Developed by Issatay Massalin.
-      </p>
-      <button
-        className="px-4 py-2 bg-black text-white font-bold rounded transition"
-        onClick={() => {
-          window.scrollTo({ top: document.querySelector('#unity-canvas').offsetTop - 80, behavior: 'smooth' });
-        }}
-      >
-        Back to Play
-      </button>
-    </section>
-  );
-
-  const TopMenu = () => (
-    <header className="bg-white shadow w-full fixed top-0 left-0 z-50">
-      <div className="mx-auto px-4 py-4 flex justify-between items-center w-full">
-        <h1 className="text-2xl font-bold">Unity WebGL Integration</h1>
-        <nav className="space-x-4">
-          <button
-            className="px-4 py-2 bg-black text-white font-bold rounded transition"
-            onClick={() => {
-              const email = window.prompt('Please enter your email to start:');
-              if (email) {
-                window.scrollTo({ top: document.querySelector('#unity-canvas').offsetTop - 80, behavior: 'smooth' });
-              } else {
-                alert('Email is required to proceed.');
-              }
-            }}
-          >
-            Play
-          </button>
-          <button
-            className="px-4 py-2 bg-black text-white font-bold rounded transition"
-            onClick={() => {
-              const aboutSection = document.querySelector('#about-section');
-              if (aboutSection) {
-                aboutSection.scrollIntoView({ behavior: 'smooth' });
-              }
-            }}
-          >
-            About
-          </button>
-          <button
-            className="px-4 py-2 bg-black text-white font-bold rounded transition"
-            onClick={() => window.open('https://github.com/istah', '_blank')}
-          >
-            Author
-          </button>
-        </nav>
-      </div>
-    </header>
-  );
 
   useEffect(() => {
     const email = window.prompt('Please enter your email to start:');
@@ -241,19 +187,19 @@ function App() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-screen bg-gray-80">
       <TopMenu />
-      <canvas
-        id="unity-canvas"
-        ref={canvasRef}
-        width={960}
-        height={600}
-        className="bg-black my-8 mt-24 block mx-auto"
-      />
-      <div className="text-center space-y-2 mx-auto">
-        <div className="text-lg font-semibold">Current Speed: {currentSpeed}</div>
-        <div className="text-lg font-semibold">Selected Object: {selectedObject || 'None'}</div>
-        <div className="text-lg font-semibold">
-          Available Interactions: {availableInteractions.length > 0 ? availableInteractions.join(', ') : 'None'}
-        </div>
+      <div className="flex flex-col items-center justify-center gap-8 my-8 mt-24">
+        <canvas
+          id="unity-canvas"
+          ref={canvasRef}
+          width={960}
+          height={600}
+          className="bg-black block"
+        />
+        <StatsPanel 
+          currentSpeed={currentSpeed} 
+          selectedObject={selectedObject} 
+          availableInteractions={availableInteractions} 
+        />
       </div>
       <AboutPage />
       <footer className="bg-white shadow w-full py-4 mt-8 text-center">

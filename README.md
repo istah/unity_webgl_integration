@@ -35,7 +35,7 @@ This project demonstrates handling player controls, object interactions, and sim
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/your-repo/unity_webgl_integration.git
+   git clone https://github.com/istah/unity_webgl_integration.git
    cd unity_webgl_integration
    ```
 
@@ -74,7 +74,7 @@ unity_webgl_integration/
 
 ## ✍️ Author
 
-- Issatay Massalin (Leather Bag)
+- Issatay Massalin
 
 ---
 
