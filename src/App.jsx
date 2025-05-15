@@ -33,6 +33,8 @@ function App() {
             .then((instance) => {
               instance.SendMessage('Analytics', 'SetEmail', email);
               setUnityInstance(instance);
+              window.unityInstance = instance;
+              window.instance = instance;
 
               let lastReceivedMessage = null;
 
@@ -56,38 +58,47 @@ function App() {
               });
 
               // --- Custom logic for moving and duplicating Construction objects ---
-              let objectToMove = null; // Track which object to move
+              let selectedConstruction = null;
+              let isDragging = false;
+              let objectY = 0;
 
-              window.addEventListener('mousedown', (e) => {
+              const handleMouseDown = (e) => {
                 if (!lastReceivedMessage || !lastReceivedMessage.payload) return;
 
                 const payload = JSON.parse(lastReceivedMessage.payload);
-                const { gameObjectName, methods } = payload;
+                const { gameObjectName, methods, hitPoint } = payload;
 
-                if (e.button === 0 && gameObjectName.includes('Construction') && methods.includes('SetPosition')) {
-                  objectToMove = gameObjectName; // Remember the object to move
-                } else if (e.button === 2 && gameObjectName.includes('Construction') && methods.includes('Duplicate')) {
+                const isConstruction = gameObjectName.startsWith('Construction');
+                const isDuplicated = gameObjectName.includes('-');
+
+                // Right-click to duplicate any construction object
+                if (e.button === 2 && isConstruction && methods.includes('Duplicate')) {
+                  console.log('Duplicating:', gameObjectName);
                   instance.SendMessage(gameObjectName, 'Duplicate');
+                  return;
                 }
-              });
 
-              window.addEventListener('contextmenu', (e) => {
-                e.preventDefault();
-                if (objectToMove) {
-                  const canvasRect = canvasRef.current.getBoundingClientRect();
-                  const mouseX = e.clientX - canvasRect.left;
-                  const mouseY = e.clientY - canvasRect.top;
+                // Left-click to either select or set position
+                if (e.button === 0) {
+                  // Select object if it's a Construction and has SetPosition
+                  if (isConstruction && methods.includes('SetPosition')) {
+                    selectedConstruction = gameObjectName;
+                    console.log('Selected object:', selectedConstruction);
+                  }
 
-                  // Simple scaling - adjust based on Unity scene scale if needed
-                  const x = (mouseX / canvasRect.width) * 100;
-                  const y = 0; 
-                  const z = (mouseY / canvasRect.height) * 100;
-
-                  instance.SendMessage(objectToMove, 'SetPosition', `${x.toFixed(2)},${y.toFixed(2)},${z.toFixed(2)}`);
-
-                  objectToMove = null; // Reset after position is set
+                  // Set position if MainArea is clicked and we have a selected object
+                  if (gameObjectName === 'MainArea' && selectedConstruction) {
+                    const { x, y, z } = hitPoint;
+                    const newPosition = `${x.toFixed(2)},${y.toFixed(2)},${z.toFixed(2)}`;
+                    console.log(`Setting position of ${selectedConstruction} to:`, newPosition);
+                    instance.SendMessage(selectedConstruction, 'SetPosition', newPosition);
+                    selectedConstruction = null;
+                  }
                 }
-              });
+              };
+
+              window.addEventListener('mousedown', handleMouseDown);
+              window.addEventListener('contextmenu', (e) => e.preventDefault());
 
               const pressedKeys = new Set();
 
@@ -115,7 +126,7 @@ function App() {
                   z *= magnitude;
                 }
 
-                const speed = pressedKeys.has('shift') ? 8 : 4;
+                const speed = pressedKeys.has('shift') ? 35 : 4;
                 setCurrentSpeed(speed);
                 x *= speed;
                 z *= speed;
@@ -165,6 +176,7 @@ function App() {
               return () => {
                 window.removeEventListener('keydown', handleKeyDown);
                 window.removeEventListener('keyup', handleKeyUp);
+                window.removeEventListener('mousedown', handleMouseDown);
                 // Optionally: remove the mouse event listeners if needed
               };
             })
