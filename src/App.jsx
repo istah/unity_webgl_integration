@@ -16,7 +16,7 @@ function App() {
     if (email) {
       const loadUnity = () => {
         const script = document.createElement('script');
-        script.src = '/Build/WebGL.loader.js';
+        script.src = 'Build/WebGL.loader.js';
         script.onload = () => {
           const canvas = document.querySelector('#unity-canvas');
           if (!canvas) {
@@ -26,9 +26,9 @@ function App() {
 
           window
             .createUnityInstance(canvas, {
-              dataUrl: '/Build/WebGL.data.gz',
-              frameworkUrl: '/Build/WebGL.framework.js.gz',
-              codeUrl: '/Build/WebGL.wasm.gz',
+              dataUrl: 'Build/WebGL.data.gz',
+              frameworkUrl: 'Build/WebGL.framework.js.gz',
+              codeUrl: 'Build/WebGL.wasm.gz',
             })
             .then((instance) => {
               instance.SendMessage('Analytics', 'SetEmail', email);
@@ -52,7 +52,6 @@ function App() {
                   if (payload.gameObjectName.includes('Button') && payload.methods.includes('Interact')) {
                     instance.SendMessage(payload.gameObjectName, 'Interact');
                   } else if (hasInteractableMethods) {
-                    // You can add more automatic interactions here if needed
                   }
                 }
               });
