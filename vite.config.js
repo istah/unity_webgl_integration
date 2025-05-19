@@ -3,5 +3,10 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   base: '/',
-  // plugins: [react()],
+  plugins: [react()],
+  server: {
+    headers: {
+      'Content-Encoding': 'gz',
+    },
+  },
 });

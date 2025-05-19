@@ -81,8 +81,18 @@ function App() {
                 if (e.button === 0) {
                   // Select object if it's a Construction and has SetPosition
                   if (isConstruction && methods.includes('SetPosition')) {
-                    selectedConstruction = gameObjectName;
-                    console.log('Selected object:', selectedConstruction);
+                    if (!selectedConstruction) {
+                      selectedConstruction = gameObjectName;
+                      console.log('Selected object:', selectedConstruction);
+                    } else {
+                      // Place the previously selected object on top of this new construction
+                      const { x, y, z } = hitPoint;
+                      const newY = y + 1.0; // Adjust Y to stack on top
+                      const newPosition = `${x.toFixed(2)},${newY.toFixed(2)},${z.toFixed(2)}`;
+                      console.log(`Stacking ${selectedConstruction} on top of ${gameObjectName} at:`, newPosition);
+                      instance.SendMessage(selectedConstruction, 'SetPosition', newPosition);
+                      selectedConstruction = null;
+                    }
                   }
 
                   // Set position if MainArea is clicked and we have a selected object
